@@ -1,0 +1,33 @@
+{
+  "name": "crew/crew-create-block",
+  "type": "package",
+  "version": "1.0.0",
+  "description": "Helper for block boilerplate.",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Robert Lee",
+      "email": "rlee@crewmp.com",
+      "homepage": "https://github.com/ssang"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Crew\\CreateBlock\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=8.1"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.15",
+    "roots/acorn": "^4.2"
+  },
+  "extra": {
+    "acorn": {
+      "providers": [
+        "Crew\\CreateBlock\\CrewCreateBlockServiceProvider"
+      ]
+    }
+  }
+}
