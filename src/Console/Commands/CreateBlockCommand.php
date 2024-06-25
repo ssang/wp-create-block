@@ -1,25 +1,28 @@
 <?php
 
-namespace Roots\AcornFseHelper\Console\Commands;
+namespace Crew\CreateBlock\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\File;
+use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Roots\Acorn\Application;
 
-use function Laravel\Prompts\confirm;
-
-class CreateBlockCommand extends Command
+class CreateBlockCommand extends Command implements PromptsForMissingInput
 {
-    protected string $name;
+    protected string $blockName;
+
+    protected Filesystem $files;
+
+    protected string $jsExtension;
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'make:block {name* : The name of the block}';
+    protected $signature = 'make:block {name : The name of the block} {--js} {--P|parent=}';
 
     /**
      * The console command description.
@@ -43,20 +46,17 @@ class CreateBlockCommand extends Command
      */
     public function handle(): void
     {
-        if (! $this->isValidAcornVersion()) {
-            $this->components->error("Full-site editing support requires <fg=red>Acorn {$this->version}</> or higher.");
+        if (!$this->isValidAcornVersion()) {
+            $this->components->error(
+                "Full-site editing support requires <fg=red>Acorn {$this->version}</> or higher."
+            );
 
             return;
         }
 
-        if (
-            app()->isProduction() &&
-            ! confirm('<fg=white>You are currently in</> <fg=red;options=bold>Production</>. <fg=white>Do you still wish to continue?</>', default: false)
-        ) {
-            return;
-        }
-
-        $this->name = $this->qualifyClass($this->getNameInput());
+        $this->files = new Filesystem();
+        $this->blockName = Str::kebab($this->argument('name'));
+        $this->jsExtension = $this->option('js') ? 'js' : 'tsx';
 
         $this->createDirectory();
         $this->createBlockFile();
@@ -66,12 +66,42 @@ class CreateBlockCommand extends Command
     }
 
     /**
-     * Return the view destination path.
+     * Prompt for missing input arguments using the returned questions.
+     *
+     * @return array
+     */
+    protected function promptForMissingArgumentsUsing()
+    {
+        return [
+            'name' => ['What is the name of the block?', 'ExampleBlock'],
+        ];
+    }
+
+    /**
+     * Return the blocks path.
      *
      * @return string
      */
     public function getBlocksPath()
-    {}
+    {
+        return resource_path() . '/blocks';
+    }
+
+    /**
+     * Return the final block path.
+     *
+     * @return string
+     */
+    public function getBlockPath()
+    {
+        $path = $this->getBlocksPath() . '/';
+
+        if (!empty($this->option('parent'))) {
+            $path = $path . Str::kebab($this->option('parent')) . '/';
+        }
+
+        return $path . $this->blockName;
+    }
 
     /**
      * Return the view destination path.
@@ -79,25 +109,122 @@ class CreateBlockCommand extends Command
      * @return string
      */
     public function getViewPath()
-    {}
+    {
+        return resource_path() . '/views/blocks';
+    }
 
     /**
      * Create the Block Directory
      */
     protected function createDirectory(): void
-    {}
+    {
+        if ($this->files->exists($this->getBlockPath())) {
+            throw new Exception(
+                'Block directory ' . $this->getBlockPath() . ' already exists.'
+            );
+        }
+
+        $this->files->makeDirectory($this->getBlockPath());
+    }
 
     protected function createBlockFile(): void
-    {}
+    {
+        $file = $this->getBlockPath() . '/block.json';
+
+        $this->files->put(
+            $file,
+            str_replace(
+                ['{{DummyBlock}}', '{{DummyBlockHeadline}}'],
+                [$this->blockName, Str::headline($this->blockName)],
+                $this->files->get(__DIR__ . '/stubs/block.stub')
+            )
+        );
+
+        $this->components->info("The block file has been created at {$file}.");
+    }
 
     protected function createBlockIndexFile(): void
-    {}
+    {
+        $file = $this->getBlockPath() . '/index.' . $this->jsExtension;
+
+        $this->files->put(
+            $file,
+            str_replace(
+                [
+                    '{{DummyBlock}}',
+                    '{{DummyBlockHeadline}}',
+                    '{{DummyBlockCamel}}',
+                ],
+                [
+                    $this->blockName,
+                    Str::headline($this->blockName),
+                    Str::studly($this->blockName),
+                ],
+                $this->files->get(__DIR__ . '/stubs/index.stub')
+            )
+        );
+
+        $this->components->info(
+            "The block index file has been created at {$file}."
+        );
+    }
 
     protected function createBlockEditFile(): void
-    {}
+    {
+        $file =
+            $this->getBlockPath() .
+            '/' .
+            Str::studly($this->blockName) .
+            '.' .
+            $this->jsExtension;
+
+        $this->files->put(
+            $file,
+            str_replace(
+                [
+                    '{{DummyBlock}}',
+                    '{{DummyBlockHeadline}}',
+                    '{{DummyBlockCamel}}',
+                ],
+                [
+                    $this->blockName,
+                    Str::headline($this->blockName),
+                    Str::studly($this->blockName),
+                ],
+                $this->files->get(__DIR__ . '/stubs/edit.stub')
+            )
+        );
+
+        $this->components->info(
+            "The block edit file has been created at {$file}."
+        );
+    }
 
     protected function createBlockViewFile(): void
-    {}
+    {
+        $file = $this->getViewPath() . '/' . $this->blockName . '.blade.php';
+
+        if ($this->files->exists($file)) {
+            $this->components->warn(
+                "The block view file already exists at {$file}."
+            );
+
+            return;
+        }
+
+        $this->files->put(
+            $file,
+            str_replace(
+                '{{DummyBlockHeadline}}',
+                Str::headline($this->blockName),
+                $this->files->get(__DIR__ . '/stubs/view.stub')
+            )
+        );
+
+        $this->components->info(
+            "The block view file has been created at {$file}."
+        );
+    }
 
     /**
      * Determine if the current Acorn version is supported.

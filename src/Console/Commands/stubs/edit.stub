@@ -6,7 +6,7 @@ export default function Edit({ attributes, setAttributes }) {
   return (
     <div { ...useBlockProps() }>
       <h1 className="font-heading py-10 text-center text-5xl">
-          Example Blocks
+        {{DummyBlockHeadline}}
       </h1>
     </div>
   );

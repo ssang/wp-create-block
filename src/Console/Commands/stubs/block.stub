@@ -1,9 +1,9 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "crew/example-block",
+  "name": "crew/{{DummyBlock}}",
   "version": "0.1.0",
-  "title": "Example Block",
+  "title": "{{DummyBlockHeadline}}",
   "category": "custom",
   "icon": "button",
   "description": "",
