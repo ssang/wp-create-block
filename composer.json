@@ -1,5 +1,5 @@
 {
-  "name": "crew/crew-create-block",
+  "name": "crew/create-block",
   "type": "package",
   "version": "1.0.0",
   "description": "Helper for block boilerplate.",
