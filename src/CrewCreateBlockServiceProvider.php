@@ -2,7 +2,6 @@
 
 namespace Crew\CreateBlock;
 
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class CrewCreateBlockServiceProvider extends ServiceProvider

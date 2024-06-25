@@ -130,13 +130,24 @@ class CreateBlockCommand extends Command implements PromptsForMissingInput
     protected function createBlockFile(): void
     {
         $file = $this->getBlockPath() . '/block.json';
+        $stub = !empty($this->option('parent'))
+            ? $this->files->get(__DIR__ . '/stubs/child-block.stub')
+            : $this->files->get(__DIR__ . '/stubs/block.stub');
 
         $this->files->put(
             $file,
             str_replace(
-                ['{{DummyBlock}}', '{{DummyBlockHeadline}}'],
-                [$this->blockName, Str::headline($this->blockName)],
-                $this->files->get(__DIR__ . '/stubs/block.stub')
+                [
+                    '{{DummyBlock}}',
+                    '{{DummyBlockHeadline}}',
+                    '{{DummyParentBlock}}',
+                ],
+                [
+                    $this->blockName,
+                    Str::headline($this->blockName),
+                    Str::kebab($this->option('parent')) ?? '',
+                ],
+                $stub
             )
         );
 
