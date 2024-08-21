@@ -22,7 +22,7 @@ class CreateBlockCommand extends Command implements PromptsForMissingInput
      *
      * @var string
      */
-    protected $signature = 'make:block {name : The name of the block} {--js} {--P|parent=}';
+    protected $signature = 'make:block {name : The name of the block} {--js} {--P|parent=} {--anchor}';
 
     /**
      * The console command description.
