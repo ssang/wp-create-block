@@ -1,3 +1,3 @@
-# Crew Create Block
+# Create Block
 
-Use `acorn make:block` to create a new block.
+Use `acorn make:block` to scaffold a new block.
