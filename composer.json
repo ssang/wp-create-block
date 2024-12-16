@@ -1,5 +1,5 @@
 {
-  "name": "crew/create-block",
+  "name": "takt/create-block",
   "type": "package",
   "version": "1.0.0",
   "description": "Helper for block boilerplate.",
@@ -7,13 +7,13 @@
   "authors": [
     {
       "name": "Robert Lee",
-      "email": "rlee@crewmp.com",
+      "email": "robert@takt.inc",
       "homepage": "https://github.com/ssang"
     }
   ],
   "autoload": {
     "psr-4": {
-      "Crew\\CreateBlock\\": "src/"
+      "Takt\\CreateBlock\\": "src/"
     }
   },
   "require": {
@@ -26,7 +26,7 @@
   "extra": {
     "acorn": {
       "providers": [
-        "Crew\\CreateBlock\\CrewCreateBlockServiceProvider"
+        "Takt\\CreateBlock\\TaktCreateBlockServiceProvider"
       ]
     }
   }

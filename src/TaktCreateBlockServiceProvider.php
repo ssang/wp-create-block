@@ -1,10 +1,10 @@
 <?php
 
-namespace Crew\CreateBlock;
+namespace Takt\CreateBlock;
 
 use Illuminate\Support\ServiceProvider;
 
-class CrewCreateBlockServiceProvider extends ServiceProvider
+class TaktCreateBlockServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.

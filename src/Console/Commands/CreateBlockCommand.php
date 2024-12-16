@@ -1,6 +1,6 @@
 <?php
 
-namespace Crew\CreateBlock\Console\Commands;
+namespace Takt\CreateBlock\Console\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
